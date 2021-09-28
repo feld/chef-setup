@@ -11,7 +11,7 @@ longorgname='Chef Lab'
 
 # Do NOT change the two dynamic variables below 
 userfilename="${username}.pem" 
-orgfilename="${orgname}.pem"
+orgfilename="${orgname}-validator.pem"
 
 # Do NOT change anything below
 sudo hostnamectl set-hostname $hostname
