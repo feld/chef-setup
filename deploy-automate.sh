@@ -25,16 +25,16 @@ sudo chef-server-ctl org-create $orgname "${longorgname}" --association_user $us
 sudo chef-automate iam token create mytoken --admin > mytoken
 key_data=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' $userfilename)
 api_token=$(cat mytoken)
-a2_server=${HOSTNAME}
+#a2_server=$hostname
 echo $key_data
 echo $api_token
-echo $a2_server
+echo $hostname
 
-create_server_data="{\"fqdn\": \"$a2_server\", \"ip_address\": \"127.0.0.1\",\"id\": \"$a2_server\", \"name\": \"$a2_server\"}"
+create_server_data="{\"fqdn\": \"$hostname\", \"ip_address\": \"127.0.0.1\",\"id\": \"$hostname\", \"name\": \"$hostname\"}"
 
-create_org_data="{\"admin_key\": \"$key_data\", \"admin_user\": \"jtonello\", \"id\": \"$orgname\", \"name\": \"$orgname\", \"server_id\": \"$a2_server\"}"
+create_org_data="{\"admin_key\": \"$key_data\", \"admin_user\": \"$username\", \"id\": \"$orgname\", \"name\": \"$orgname\", \"server_id\": \"$hostname\"}"
 
-curl --location --insecure --request POST "https://$a2_server/api/v0/infra/servers" --header 'Content-Type: application/json' --header "api-token: $api_token"  -d "$create_server_data" || exit 1
+curl --location --insecure --request POST "https://$hostname/api/v0/infra/servers" --header 'Content-Type: application/json' --header "api-token: $api_token"  -d "$create_server_data" || exit 1
 
-curl --location --insecure --request POST "https://$a2_server/api/v0/infra/servers/$a2_server/orgs" --header 'Content-Type: application/json' --header "api-token: $api_token"  -d "$create_org_data" || exit 1
+curl --location --insecure --request POST "https://$hostname/api/v0/infra/servers/$hostname/orgs" --header 'Content-Type: application/json' --header "api-token: $api_token"  -d "$create_org_data" || exit 1
 
