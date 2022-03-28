@@ -21,3 +21,21 @@ curl https://packages.chef.io/files/current/latest/chef-automate-cli/chef- autom
 sudo ./chef-automate deploy --product infra-server -- accept-terms-and-mlsa=true
 sudo chef-server-ctl user-create $username $longusername $useremail "${userpassword}" --filename $userfilename
 sudo chef-server-ctl org-create $orgname "${longorgname}" --association_user $username --filename $orgfilename
+
+# Auto-integrate Chef Automate and local Chef Infra Server
+sudo chef-automate iam token create mytoken --admin > mytoken
+key_data=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' $userfilename)
+api_token=$(cat mytoken)
+a2_server=${HOSTNAME}
+echo $key_data
+echo $api_token
+echo $a2_server
+
+create_server_data="{\"fqdn\": \"$a2_server\", \"ip_address\": \"127.0.0.1\",\"id\": \"$a2_server\", \"name\": \"$a2_server\"}"
+
+create_org_data="{\"admin_key\": \"$key_data\", \"admin_user\": \"$username\", \"id\": \"$orgname\", \"name\": \"$orgname\", \"server_id\": \"$a2_server\"}"
+
+curl --location --insecure --request POST "https://$a2_server/api/v0/infra/servers" --header 'Content-Type: application/json' --header "api-token: $api_token"  -d "$create_server_data" || exit 1
+
+curl --location --insecure --request POST "https://$a2_server/api/v0/infra/servers/$a2_server/orgs" --header 'Content-Type: application/json' --header "api-token: $api_token"  -d "$create_org_data" || exit 1
+
