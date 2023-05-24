@@ -25,7 +25,7 @@ sudo chef-server-ctl org-create $orgname "${longorgname}" --association_user $us
 sudo chef-automate iam token create mytoken --admin > mytoken
 key_data=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' $userfilename)
 api_token=$(cat mytoken)
-# a2_server=${HOSTNAME}
+# a2_server=${hostname}
 echo $key_data
 echo $api_token
 echo $hostname
